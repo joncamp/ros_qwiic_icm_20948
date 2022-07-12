@@ -19,7 +19,8 @@ if(MSVC)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic)
+  # Arduino code can have unused parameters
+  add_compile_options(-Wall -Wextra -Wno-unused-parameter)
 endif()
 
 add_executable(${PROJECT_NAME} 
@@ -62,6 +63,7 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(Boost REQUIRED system)
 
@@ -75,6 +77,7 @@ include_directories(
 
 ament_target_dependencies(${PROJECT_NAME} 
   rclcpp
+  std_msgs
   sensor_msgs
   Boost)
 

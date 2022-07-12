@@ -61,14 +61,20 @@ class I2CPublisher : public rclcpp::Node
     I2CPublisher()
     : Node("ros_qwiic_icm_20948")
     , _id(0) 
+    , _bus("")
     {
-      get_parameter_or<uint8_t>("id", _id, 0x5D); 
+    }
+
+    void initialize()
+    {
+      get_parameter_or<uint8_t>("i2c_address", _id, 0x5D); 
+      get_parameter_or<std::string>("bus", _bus, "/dev/i2c-1"); 
       get_parameter_or<std::string>("frame_id", _frameId, "imu"); 
       get_parameter_or<std::string>("topicImu", _topicImu, "/imu/data_raw"); 
       get_parameter_or<std::string>("topicMag", _topicMag, "/imu/mag"); 
       get_parameter_or<double>("poll", _poll, 15.0);
 
-      Wire.begin();
+      Wire.begin(_bus);
       Wire.setAddressSize(1); 
       Wire.setPageBytes(256);
       myICM.begin(Wire, AD0_VAL);
@@ -116,6 +122,7 @@ class I2CPublisher : public rclcpp::Node
     rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr _publisherImu;
     rclcpp::Publisher<sensor_msgs::msg::MagneticField>::SharedPtr _publisherMag;
     uint8_t _id;
+    std::string _bus;
     double _poll;
     std::string _topicImu;
     std::string _topicMag;
@@ -129,10 +136,14 @@ int main(int argc, char * argv[])
 
     auto node = std::make_shared<I2CPublisher>();
     node->declare_parameter("i2c_address");
+    node->declare_parameter("bus");
     node->declare_parameter("frame_id");
     node->declare_parameter("poll");
     node->declare_parameter("topicImu");
     node->declare_parameter("topicMag");
+
+    
+    node->initialize();
 
     rclcpp::spin(node);
     rclcpp::shutdown();
