@@ -67,7 +67,7 @@ class I2CPublisher : public rclcpp::Node
 
     void initialize()
     {
-      get_parameter_or<uint8_t>("i2c_address", _id, 0x5D); 
+      get_parameter_or<uint8_t>("i2c_address", _id, 0x69); 
       get_parameter_or<std::string>("bus", _bus, "/dev/i2c-1"); 
       get_parameter_or<std::string>("frame_id", _frameId, "imu"); 
       get_parameter_or<std::string>("topicImu", _topicImu, "/imu/data_raw"); 
