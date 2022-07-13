@@ -74,10 +74,10 @@ class I2CPublisher : public rclcpp::Node
       get_parameter_or<std::string>("topicMag", _topicMag, "/imu/mag"); 
       get_parameter_or<double>("poll", _poll, 15.0);
 
-      pWire = new TwoWire(_bus);
-      pWire->begin();
-      pWire->setAddressSize(1); 
-      pWire->setPageBytes(256);
+      Wire.setBus(_bus);
+      Wire.begin();
+      Wire.setAddressSize(1); 
+      Wire.setPageBytes(256);
       myICM.begin(Wire, AD0_VAL);
 
       _publisherImu = this->create_publisher<sensor_msgs::msg::Imu>(_topicImu, 10);
@@ -128,8 +128,6 @@ class I2CPublisher : public rclcpp::Node
     std::string _topicImu;
     std::string _topicMag;
     std::string _frameId;
-
-    TwoWire *pWire = NULL;
 };
 
 int main(int argc, char * argv[])
